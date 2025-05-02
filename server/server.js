@@ -11,7 +11,6 @@ import userRouter from './routes/userRoutes.js'
 
 // Initialize Express
 const app = express()
-const cors = require('cors');
 app.use(cors());
 
 // Connect to database

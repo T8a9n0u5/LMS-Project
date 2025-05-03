@@ -15,7 +15,7 @@ const CourseDetails = () => {
   const [courseData, setCourseData] = useState(null);
   const [openSections, setOpenSections] = useState({});
   const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false);
-  const [ playerData , setPlayerData] = useState(null)
+  const [playerData, setPlayerData] = useState(null)
   const {
     allCourses,
     calculateRating,
@@ -26,39 +26,39 @@ const CourseDetails = () => {
   } = useContext(AppContext);
 
   const fetchCourseData = async () => {
-   try{
-    const{data} = await axios.get(backendUrl + '/api/course/' + id)
-    if(data.success){
-      setCourseData(data.courseData)
-    }else{
-      toast.error(data.message)
+    try {
+      const { data } = await axios.get(backendUrl + '/api/course/' + id)
+      if (data.success) {
+        setCourseData(data.courseData)
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
     }
-   }catch(error){
-    toast.error(error.message)
-   }
-   
+
   };
 
   const enrollCourse = async () => {
-    try{
-      if(!userData){
+    try {
+      if (!userData) {
         return toast.warn('Login to Enroll')
       }
-      if(isAlreadyEnrolled){
+      if (isAlreadyEnrolled) {
         return toast.warn('Already Enrolled')
       }
       const token = await getToken();
 
-      const {data} = await axios.post(backendUrl + '/api/user/purchase',{courseId:courseData._id}, {headers: {Authorization: `Bearer ${token}`}})
-      if(data.success){
-        const {session_url} = data
+      const { data } = await axios.post(backendUrl + '/api/user/purchase', { courseId: courseData._id }, { headers: { Authorization: `Bearer ${token}` } })
+      if (data.success) {
+        const { session_url } = data
         window.location.replace(session_url)
 
-      }else{
+      } else {
         toast.error(data.message)
       }
     }
-    catch(error){
+    catch (error) {
       toast.error(error.message)
 
     }
@@ -67,11 +67,11 @@ const CourseDetails = () => {
     fetchCourseData();
   }, []);
 
-  useEffect(()=>{
-    if(userData && courseData){
+  useEffect(() => {
+    if (userData && courseData) {
       setIsAlreadyEnrolled(userData.enrollCourse.includes(courseData._id))
     }
-  },[userData,courseData])
+  }, [userData, courseData])
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -112,12 +112,12 @@ const CourseDetails = () => {
               ))}
             </div>
             <p className="text-blue-500">
-              ({courseData.courseRatings.length}{" "}
-              {courseData.courseRatings.length > 1 ? "ratings" : "rating"})
+              ({courseData?.courseRatings?.length}{" "}
+              {courseData?.courseRatings?.length > 1 ? "ratings" : "rating"})
             </p>
             <p>
-              {courseData.enrolledStudents.length}
-              {courseData.enrolledStudents.length > 1 ? "students" : "student"}
+              {courseData?.enrolledStudents?.length}
+              {courseData?.enrolledStudents?.length > 1 ? "students" : "student"}
             </p>
           </div>
 
@@ -140,9 +140,8 @@ const CourseDetails = () => {
                   >
                     <div className="flex items-center gap-2">
                       <img
-                        className={`transform transition-transform ${
-                          openSections[index] ? "rotate-180" : ""
-                        }`}
+                        className={`transform transition-transform ${openSections[index] ? "rotate-180" : ""
+                          }`}
                         src={assets.down_arrow_icon}
                         alt="arrow icon"
                       />
@@ -157,9 +156,8 @@ const CourseDetails = () => {
                   </div>
 
                   <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      openSections[index] ? "max-h-96" : "max-h-0"
-                    }`}
+                    className={`overflow-hidden transition-all duration-300 ${openSections[index] ? "max-h-96" : "max-h-0"
+                      }`}
                   >
                     <ul className="list-disc md:pl-10 pl-4 pr-4 py-2 text-gray-600 border-t border-gray-300">
                       {chapter.chapterContent.map((lecture, i) => (
@@ -173,10 +171,10 @@ const CourseDetails = () => {
                             <p>{lecture.lectureTitle}</p>
                             <div className="flex gap-2">
                               {lecture.isPreviewFree && (
-                                 <p onClick={()=>setPlayerData({
+                                <p onClick={() => setPlayerData({
                                   videoId: lecture.lectureUrl.split('/').pop()
-                                 })}
-                                className="text-blue-500 cursor-pointer">
+                                })}
+                                  className="text-blue-500 cursor-pointer">
                                   Preview
                                 </p>
                               )}
@@ -212,14 +210,17 @@ const CourseDetails = () => {
 
         {/* right column */}
         <div className="max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px]">
-        {
-                    playerData ? 
-                     <YouTube videoId={playerData.videoId} opts={{playerVars: {
-                      autoplay: 1 }}} iframeClassName="w-full aspect-video" />
-                   : <img src={courseData.courseThumbnail} alt="" />
-              
-                   }  
-          
+          {
+            playerData ?
+              <YouTube videoId={playerData.videoId} opts={{
+                playerVars: {
+                  autoplay: 1
+                }
+              }} iframeClassName="w-full aspect-video" />
+              : <img src={courseData.courseThumbnail} alt="" />
+
+          }
+
           <div className="p-5">
             <div className="flex items-center gap-2">
 
@@ -232,14 +233,14 @@ const CourseDetails = () => {
 
             <div className="flex gap-3 items-center pt-2">
               <p className="text-gray-800 md:text-4xl text-2xl font-semibold">
-                {currency}
+                {currency + " "}
                 {(
                   courseData.coursePrice -
                   (courseData.discount * courseData.coursePrice) / 100
                 ).toFixed(2)}
               </p>
               <p className="md:text-lg text-gray-500 line-through">
-                {currency}
+                {currency + " "}
                 {courseData.coursePrice}
               </p>
               <p className="md:text-lg text-gray-500">
@@ -266,8 +267,8 @@ const CourseDetails = () => {
                 <p>{calculateNoOfLectures(courseData)} lessons</p>
               </div>
             </div>
-            
-            <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">{isAlreadyEnrolled?'Already Enrolled' : 'Enroll Now'}</button>
+
+            <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">{isAlreadyEnrolled ? 'Already Enrolled' : 'Enroll Now'}</button>
 
             <div className="pt-6">
               <p className="md:text-xl text-lg font-medium text-gray-800">What's in the course?</p>
@@ -283,7 +284,7 @@ const CourseDetails = () => {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   ) : (
     <Loading />

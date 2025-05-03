@@ -29,7 +29,7 @@ export const AppContextProvider = (props)=>
         try{
             const {data} = await axios.get(backendUrl + '/api/course/all');
             if(data.success){
-                setAllCourses(data.courses)
+                setAllCourses(data?.courses)
             }else{
                 toast.error(data.message)
             }
@@ -88,16 +88,17 @@ export const AppContextProvider = (props)=>
     // function to create average rating of course
     const calculateRating = (course)=>
     {
-        if(course.courseRatings.length === 0)
+        
+        if(course?.courseRatings?.length === 0)
         {
             return 0 ;
         }
         let totalRating = 0 
-        course.courseRatings.forEach(rating =>
+        course?.courseRatings?.forEach(rating =>
         {
             totalRating += rating.rating
         })
-        return Math.floor(totalRating / course.courseRatings.length)
+        return Math.floor(totalRating / course?.courseRatings?.length)
     }
     // function to calculate course chapter time
     const calculateChapterTime = (chapter)=>
@@ -120,7 +121,7 @@ export const AppContextProvider = (props)=>
         course.courseContent.forEach(chapter => {
             if(Array.isArray(chapter.chapterContent))
             {
-                totalLectures += chapter.chapterContent.length
+                totalLectures += chapter?.chapterContent?.length
             }
         });
         return totalLectures;
